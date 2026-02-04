@@ -8,7 +8,7 @@ package readtsv;
 sub new {
   my $class = shift;
   my $fn = shift;
-  my $self = { fn=>$fn, fh=>undef, csv=>0 };
+  my $self = { fn=>$fn, fh=>undef, csv=>0, robust=>0 };
   bless($self, ref($class) || $class);
   my %name2pat = @_;
   foreach my $name (keys %name2pat) { $name2pat{$name} ||= "^$name"; }
@@ -54,11 +54,13 @@ sub getln {
   my $ln = <$fh> || return undef;
   my @cols = $self->{csv} ? csvsplit($ln) : split(/\t/, $ln);
   $cols[-1] =~ s/\s+$//gs;
-  die "reading $$self{fn}: expected ".scalar(@{$self->{colmap}})." cols, only ".scalar(@cols)." in $.. @cols"
-    if @cols != @{$self->{colmap}};
+  if(@cols != @{$self->{colmap}}) { 
+    my $msg = "reading $$self{fn}: expected ".scalar(@{$self->{colmap}})." cols, only ".scalar(@cols)." in $.. @cols";
+    if($self->{robust}) {warn "warning: $msg";} else {die $msg}
+  }
   my $vals = { fileline => join('\t',@cols) };
   for( my $colnum = 0; $colnum < @{$self->{colmap}}; ++$colnum ) {
-    if( $self->{colmap}->[$colnum] ) {
+    if( $self->{colmap}->[$colnum] && $self->{colmap}->[$colnum] < @cols) {
       $vals->{$self->{colmap}->[$colnum]} = $cols[$colnum];
     }
   }
