@@ -59,8 +59,8 @@ sub getln {
     if($self->{robust}) {warn "warning: $msg";} else {die $msg}
   }
   my $vals = { fileline => join('\t',@cols) };
-  for( my $colnum = 0; $colnum < @{$self->{colmap}}; ++$colnum ) {
-    if( $self->{colmap}->[$colnum] && $self->{colmap}->[$colnum] < @cols) {
+  for( my $colnum = 0; $colnum < @cols; ++$colnum ) {
+    if( defined $self->{colmap}->[$colnum]) {
       $vals->{$self->{colmap}->[$colnum]} = $cols[$colnum];
     }
   }
