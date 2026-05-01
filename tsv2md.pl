@@ -8,7 +8,7 @@ use strict;
 # then ctrl-shift-v to see a formatted preview
 # then you can paste that wherever
 while(my $ln = <STDIN>) {
-  @cols = split /\t/, $ln;
+  my @cols = split /\t/, $ln;
   $cols[-1] =~ s/\s+$//gs;
   $cols[0] =~ s/^#//
     if $. == 1;
